@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7c3aed">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hoolio Apartments">
+  <title>Hoolio Apartments — Room Status</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-left">
+      <span class="app-title">&#127970; Hoolio Apartments &mdash; Room Status</span>
+      <input type="text" class="date-input" id="rep-date" placeholder="Date e.g. 3 June 2026">
+    </div>
+    <div class="header-right">
+      <div class="save-indicator"><div class="save-dot"></div><span id="save-label">Saved</span></div>
+      <button class="btn-install" id="btn-install" style="display:none">&#11015;&#65039; Install App</button>
+      <button class="btn-reset" onclick="resetAll()">&#8635; Reset ticks</button>
+      <button class="btn-copy" onclick="generatePreview()">&#128203; Copy for WhatsApp</button>
+    </div>
+  </header>
+
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <div class="stats-bar" id="stats-bar"></div>
+
+  <div class="main" id="main"></div>
+
+  <div class="preview-panel" id="preview-panel">
+    <div class="preview-header">
+      <span>&#128241; WhatsApp message preview</span>
+      <button onclick="document.getElementById('preview-panel').style.display='none'" style="background:transparent;border:none;font-size:18px;color:#ffffff;padding:0;cursor:pointer">&#215;</button>
+    </div>
+    <div class="preview-body" id="preview-body"></div>
+    <div class="preview-footer">
+      <button class="btn-copy" onclick="copyText()" style="background:var(--primary);border-color:var(--primary-dark);color:#fff;">&#128203; Copy to clipboard</button>
+      <span class="copied-msg" id="copied-msg">&#10003; Copied to clipboard!</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
