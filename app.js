@@ -23,6 +23,11 @@ const PROPS = [
     ]
   },
   {
+    key: "jahi_2",
+    name: "Jahi II",
+    units: ["101", "102", "201", "202"]
+  },
+  {
     key: "mabushi",
     name: "Mabushi",
     units: [
@@ -56,6 +61,7 @@ function defaultState() {
         cin: false,
         cout: false,
         ext: false,
+        maint: false,
         notes: ""
       };
     });
@@ -122,6 +128,7 @@ function tickAll(propKey, field) {
     s.cin = false;
     s.cout = false;
     s.ext = false;
+    s.maint = false;
     s[field] = true;
   });
   saveState();
@@ -138,6 +145,7 @@ function clearProp(propKey) {
     s.cin = false;
     s.cout = false;
     s.ext = false;
+    s.maint = false;
     s.guest = "";
     s.notes = "";
   });
@@ -153,6 +161,7 @@ function resetAll() {
     s.cin = false;
     s.cout = false;
     s.ext = false;
+    s.maint = false;
     s.guest = "";
     s.notes = "";
   });
@@ -163,7 +172,7 @@ function resetAll() {
 }
 
 function chipClass(field) {
-  return { avail: "on-avail", cin: "on-cin", cout: "on-cout", ext: "on-ext" }[field] || "";
+  return { avail: "on-avail", cin: "on-cin", cout: "on-cout", ext: "on-ext", maint: "on-maint" }[field] || "";
 }
 
 function buildUnitRow(p, u) {
@@ -173,6 +182,7 @@ function buildUnitRow(p, u) {
   const cc = s.cin ? " on-cin" : "";
   const oc = s.cout ? " on-cout" : "";
   const ec = s.ext ? " on-ext" : "";
+  const mc = s.maint ? " on-maint" : "";
   return `<div class="unit-row">
     <span class="unit-label">${u}</span>
     <input class="guest-input" type="text" placeholder="Guest name" value="${s.guest.replace(/"/g, '&quot;')}"
@@ -182,6 +192,7 @@ function buildUnitRow(p, u) {
       <button class="chip${cc}" onclick="toggle('${key}','cin')">Check-in</button>
       <button class="chip${oc}" onclick="toggle('${key}','cout')">Check-out</button>
       <button class="chip${ec}" onclick="toggle('${key}','ext')">Extending</button>
+      <button class="chip${mc}" onclick="toggle('${key}','maint')">Maintenance</button>
     </div>
     <input class="notes-input" type="text" placeholder="Notes..." value="${s.notes.replace(/"/g, '&quot;')}"
       onchange="setNotes('${key}',this.value)" style="width:130px">
@@ -199,6 +210,7 @@ function renderMain() {
           <button class="mini-btn mb-cin"   onclick="tickAll('${p.key}','cin')">✓ All check-in</button>
           <button class="mini-btn mb-cout"  onclick="tickAll('${p.key}','cout')">✓ All check-out</button>
           <button class="mini-btn mb-ext"   onclick="tickAll('${p.key}','ext')">✓ All extending</button>
+          <button class="mini-btn mb-maint" onclick="tickAll('${p.key}','maint')">✓ All maintenance</button>
           <button class="mini-btn mb-clear" onclick="clearProp('${p.key}')">✕ Clear</button>
         </div>
       </div>
@@ -226,11 +238,13 @@ function updateStats() {
   const ci = vals.filter(s => s.cin).length;
   const co = vals.filter(s => s.cout).length;
   const ex = vals.filter(s => s.ext).length;
+  const m = vals.filter(s => s.maint).length;
   document.getElementById("stats-bar").innerHTML = `
     <div class="stat-pill"><span>${a}</span>available</div>
     <div class="stat-pill"><span>${ci}</span>check-in</div>
     <div class="stat-pill"><span>${co}</span>check-out</div>
     <div class="stat-pill"><span>${ex}</span>extending</div>
+    <div class="stat-pill"><span>${m}</span>maintenance</div>
   `;
 }
 
@@ -240,7 +254,7 @@ function generatePreview() {
   let lines = ["*HOOLIO APARTMENTS — ROOM STATUS REPORT*", "Date: " + date];
 
   PROPS.forEach(p => {
-    const avail = [], cin = [], cout = [], ext = [];
+    const avail = [], cin = [], cout = [], ext = [], maint = [];
     p.units.forEach(u => {
       const s = state[p.key + "||" + u];
       const label = u + (s.guest ? " — " + s.guest : "") + (s.notes ? " (" + s.notes + ")" : "");
@@ -248,13 +262,15 @@ function generatePreview() {
       if (s.cin) cin.push(label);
       if (s.cout) cout.push(label);
       if (s.ext) ext.push(label);
+      if (s.maint) maint.push(label);
     });
-    if (!avail.length && !cin.length && !cout.length && !ext.length) return;
+    if (!avail.length && !cin.length && !cout.length && !ext.length && !maint.length) return;
     lines.push("", "📍 *" + p.name + "*");
     if (avail.length) { lines.push("🟢 Available"); avail.forEach(x => lines.push("  • " + x)); }
     if (cin.length) { lines.push("🔵 Check-in"); cin.forEach(x => lines.push("  • " + x)); }
     if (cout.length) { lines.push("🟡 Check-out"); cout.forEach(x => lines.push("  • " + x)); }
     if (ext.length) { lines.push("🟣 Extending"); ext.forEach(x => lines.push("  • " + x)); }
+    if (maint.length) { lines.push("🛠️ Maintenance"); maint.forEach(x => lines.push("  • " + x)); }
   });
 
   document.getElementById("preview-body").textContent = lines.join("\n");
