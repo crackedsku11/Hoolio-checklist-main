@@ -1,4 +1,4 @@
-const CACHE_NAME = 'room-checklist-v5';
+const CACHE_NAME = 'room-checklist-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
