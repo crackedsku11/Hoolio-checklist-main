@@ -302,7 +302,7 @@
   <div class="header-right">
     <div class="save-indicator"><div class="save-dot"></div><span id="save-label">Saved</span></div>
     <button class="btn-reset" onclick="resetAll()">&#8635; Reset ticks</button>
-    <button class="btn-copy" onclick="generatePreview()">&#128203; Copy for WhatsApp</button>
+    <button class="btn-copy" onclick="generatePreview()">Copy</button>
   </div>
 </header>
 
@@ -355,6 +355,8 @@ const PROPS = [
 const STORAGE_KEY = "room_checklist_v1";
 let state = {};
 let activeFilter = "all";
+let reportDateWasEdited = false;
+let reportDateDay = new Date().toDateString();
 
 function defaultState() {
   const s = {};
@@ -420,6 +422,8 @@ function resetAll() {
   if(!confirm("Reset everything? All ticks, guest names and notes will be cleared.")) return;
   Object.values(state).forEach(s=>{ s.avail=false; s.cin=false; s.cout=false; s.ext=false; s.guest=""; s.notes=""; });
   saveState(); renderMain(); updateStats();
+  reportDateWasEdited = false;
+  updateReportDate();
   document.getElementById("preview-panel").style.display="none";
 }
 
@@ -534,13 +538,27 @@ function copyText() {
   });
 }
 
-document.getElementById("rep-date").addEventListener("change", saveState);
-document.getElementById("rep-date").addEventListener("input", saveState);
+const reportDateInput = document.getElementById("rep-date");
+function formatToday() {
+  return new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+}
+function updateReportDate() {
+  const today = new Date().toDateString();
+  if (today !== reportDateDay) {
+    reportDateDay = today;
+    reportDateWasEdited = false;
+  }
+  if (!reportDateWasEdited) reportDateInput.value = formatToday();
+}
+reportDateInput.addEventListener("change", () => { reportDateWasEdited = true; saveState(); });
+reportDateInput.addEventListener("input", () => { reportDateWasEdited = true; saveState(); });
+window.addEventListener("focus", updateReportDate);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) updateReportDate(); });
+setInterval(updateReportDate, 60 * 1000);
 
 loadState();
 // Always show today's date when the app is opened
-document.getElementById("rep-date").value =
-  new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+updateReportDate();
 renderFilterBar();
 renderMain();
 updateStats();

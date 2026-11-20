@@ -168,6 +168,8 @@ function resetAll() {
   saveState();
   renderMain();
   updateStats();
+  reportDateWasEdited = false;
+  updateReportDate();
   document.getElementById("preview-panel").style.display = "none";
 }
 
@@ -289,14 +291,43 @@ function copyText() {
   });
 }
 
-document.getElementById("rep-date").addEventListener("change", saveState);
-document.getElementById("rep-date").addEventListener("input", saveState);
+const reportDateInput = document.getElementById("rep-date");
+let reportDateWasEdited = false;
+let reportDateDay = new Date().toDateString();
+
+function formatToday() {
+  return new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function updateReportDate() {
+  const today = new Date().toDateString();
+  if (today !== reportDateDay) {
+    reportDateDay = today;
+    reportDateWasEdited = false;
+  }
+  if (!reportDateWasEdited) reportDateInput.value = formatToday();
+}
+
+reportDateInput.addEventListener("change", () => {
+  reportDateWasEdited = true;
+  saveState();
+});
+reportDateInput.addEventListener("input", () => {
+  reportDateWasEdited = true;
+  saveState();
+});
+
+// Keep the date current if the app stays open across midnight or resumes later.
+window.addEventListener("focus", updateReportDate);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) updateReportDate();
+});
+setInterval(updateReportDate, 60 * 1000);
 
 // Initialization
 loadState();
 // Always show today's date when the app is opened
-document.getElementById("rep-date").value =
-  new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+updateReportDate();
 renderFilterBar();
 renderMain();
 updateStats();

@@ -308,12 +308,12 @@ button:hover {
 }
 
 .mini-btn.mb-maint {
-  border-color: var(--orange-border);
-  color: var(--orange-text);
+  border-color: var(--red-border);
+  color: var(--red-text);
 }
 
 .mini-btn.mb-maint:hover {
-  background: var(--orange-bg);
+  background: var(--red-bg);
 }
 
 .mini-btn.mb-clear {
@@ -422,9 +422,9 @@ button:hover {
 }
 
 .chip.on-maint {
-  background: var(--orange-bg);
-  border-color: var(--orange-border);
-  color: var(--orange-text);
+  background: var(--red-bg);
+  border-color: var(--red-border);
+  color: var(--red-text);
   font-weight: 500;
 }
 
